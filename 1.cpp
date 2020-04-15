@@ -302,7 +302,7 @@ int main()
 }
 #endif
 
-#if 1
+#if 0
 
 class CCar
 {
@@ -329,6 +329,189 @@ int main()
 {
     CDriver cdr;
     cdr.ModifyCar();
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+using namespace std;
+
+template<typename T> void Swap(T *a, T *b){
+    T temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+template<typename T> void SwapX(T *a, T *b){
+    T temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+template<typename T> void Swap(T &a, T &b){
+    T temp = a;
+    a = b;
+    b = temp;
+}
+
+int main(){
+    //交换 int 变量的值
+    int n1 = 100, n2 = 200;
+    cout<<n1<<", "<<n2<<endl;
+    
+    SwapX(&n1, &n2);
+    cout<<n1<<", "<<n2<<endl;
+    
+    Swap(n1, n2);
+    cout<<n1<<", "<<n2<<endl;
+   
+    //交换 float 变量的值
+    float f1 = 12.5, f2 = 56.93;
+    Swap(&f1, &f2);
+    cout<<f1<<", "<<f2<<endl;
+   
+    //交换 char 变量的值
+    char c1 = 'A', c2 = 'B';
+    Swap(&c1, &c2);
+    cout<<c1<<", "<<c2<<endl;
+   
+    //交换 bool 变量的值
+    bool b1 = false, b2 = true;
+    Swap(&b1, &b2);
+    cout<<b1<<", "<<b2<<endl;
+
+    return 0;
+}
+#endif
+
+#if 0
+
+#include <iostream>
+using namespace std;
+
+//template <typename X, typename Y> class A
+template <class X, class Y> class A
+{
+public:
+  X x;
+  Y y;
+  X set(X x)
+  {
+    this->x=x;
+    return this->x;
+  }
+  Y set(Y y)
+  {
+    this->y=y;
+    return this->y;
+  }
+  
+  Y sety(Y y)
+  {
+    this->y=y;
+    return this->y;
+  }
+};
+
+int main(void)
+{
+  A<string,int> a;
+  
+  cout <<a.set("agcdefg")<<endl;
+  cout <<a.set(10)<<endl;
+  cout <<a.sety("20")<<endl;
+}
+
+#endif
+
+#if 1
+#include <iostream>
+#include <cstring>
+using namespace std;
+template <class T>
+class CArray
+{
+    int size; //数组元素的个数
+    T *ptr; //指向动态分配的数组
+public:
+    CArray(int s = 0);  //s代表数组元素的个数
+    CArray(CArray & a);
+    ~CArray();
+    void push_back(const T & v); //用于在数组尾部添加一个元素v
+    CArray & operator=(const CArray & a); //用于数组对象间的赋值
+    T length() { return size; }
+    T & operator[](int i)
+    {//用以支持根据下标访问数组元素，如a[i] = 4;和n = a[i]这样的语句
+        return ptr[i];
+    }
+};
+template<class T>
+CArray<T>::CArray(int s):size(s)
+{
+     if(s == 0)
+         ptr = NULL;
+    else
+        ptr = new T[s];
+}
+template<class T>
+CArray<T>::CArray(CArray & a)
+{
+    if(!a.ptr) {
+        ptr = NULL;
+        size = 0;
+        return;
+    }
+    ptr = new T[a.size];
+    memcpy(ptr, a.ptr, sizeof(T ) * a.size);
+    size = a.size;
+}
+template <class T>
+CArray<T>::~CArray()
+{
+     if(ptr) delete [] ptr;
+}
+template <class T>
+CArray<T> & CArray<T>::operator=(const CArray & a)
+{ //赋值号的作用是使"="左边对象里存放的数组，大小和内容都和右边的对象一样
+    if(this == & a) //防止a=a这样的赋值导致出错
+    return * this;
+    if(a.ptr == NULL) {  //如果a里面的数组是空的
+        if( ptr )
+            delete [] ptr;
+        ptr = NULL;
+        size = 0;
+        return * this;
+    }
+     if(size < a.size) { //如果原有空间够大，就不用分配新的空间
+         if(ptr)
+            delete [] ptr;
+        ptr = new T[a.size];
+    }
+    memcpy(ptr,a.ptr,sizeof(T)*a.size);   
+    size = a.size;
+     return *this;
+}
+template <class T>
+void CArray<T>::push_back(const T & v)
+{  //在数组尾部添加一个元素
+    if(ptr) {
+        T *tmpPtr = new T[size+1]; //重新分配空间
+    memcpy(tmpPtr,ptr,sizeof(T)*size); //拷贝原数组内容
+    delete []ptr;
+    ptr = tmpPtr;
+}
+    else  //数组本来是空的
+        ptr = new T[1];
+    ptr[size++] = v; //加入新的数组元素
+}
+int main()
+{
+    CArray<int> a;
+    for(int i = 0;i < 5;++i)
+        a.push_back(i);
+    for(int i = 0; i < a.length(); ++i)
+        cout << a[i] << " ";   
     return 0;
 }
 #endif
